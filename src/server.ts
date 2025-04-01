@@ -7,7 +7,7 @@ console.log("Environment Variables:", {
     PORT: process.env.PORT
 })
   
-app.use(cors({origin:  Bun.env.CORS_ORIGIN as unknown as string}));
+app.use(cors({origin:  Bun.env.CORS_ORIGIN as string}));
 app.route('/', home);
 
   export default {
