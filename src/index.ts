@@ -1,10 +1,6 @@
+import { Hono } from "hono";
 
 
-const server = Bun.serve({
-    port: 3000,
-    fetch(req) {
-      return new Response("Bun!");
-    },
-  });
-  
-  console.log(`Listening on http://localhost:${server.port} ...`);
+export const app = new Hono();
+export const port = process.env.PORT;
+
