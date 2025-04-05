@@ -1,12 +1,11 @@
 import {Hono} from 'hono';
+import { getHomeRouteHandler } from '../routeHandlers/homeRouteHandler';
 
 
 const home = new Hono();
 
 
-home.get('/', (c) => {
-    return c.text("Hello World");
-  });
+home.get('/', getHomeRouteHandler);
 
 
 export default home;
