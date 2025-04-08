@@ -1,10 +1,12 @@
 import type { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import type { Expense } from '../../types';
+import type { Expense } from '../../db/schema/expenses';
+
+type ExpenseFromClient = Omit<Expense, 'id'>;
 
 export const handleCreateExpense = async (c: Context) => {
   try {
-    const body = (await c.req.json()) as Expense;
+    const body = (await c.req.json()) as ExpenseFromClient;
     console.log(body);
     return c.json({ data: 'Expense has been added successfully' });
   } catch (error) {
