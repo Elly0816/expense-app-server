@@ -9,7 +9,7 @@ declare global {
   }
 }
 
-export type Expense = {
+export type ExpenseType = {
   category: string;
   expense: string;
   amount: number;
