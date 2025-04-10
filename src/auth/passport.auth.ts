@@ -2,6 +2,7 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { type NewUser, type User } from '../db/schema/users';
 import { addUser, getUserById } from '../db/queries/users.queries';
+import { TokenManager } from '../redis/token.manager';
 
 //Serialize user for the session
 
@@ -43,11 +44,15 @@ passport.use(
             name: profile.displayName,
             provider: 'google',
           };
-          const addedUser = ((await addUser(newUser)) as User[])[0];
-          if (addedUser) {
-            done(null, addedUser);
-          }
+          user = ((await addUser(newUser)) as User[])[0];
         }
+        //Store tokens in redis
+
+        await TokenManager.storeTokens(user.id, {
+          accessToken,
+          refreshToken,
+          expiresAt: Date.now() + 3600 * 1000,
+        });
 
         done(null, user);
       } catch (error) {
