@@ -4,6 +4,7 @@
     "": {
       "name": "expense-app-server",
       "dependencies": {
+        "@hono/oauth-providers": "^0.7.1",
         "@neondatabase/serverless": "^1.0.0",
         "@types/passport": "^1.0.17",
         "@types/passport-google-oauth20": "^2.0.16",
@@ -79,6 +80,8 @@
     "@esbuild/win32-ia32": ["@esbuild/win32-ia32@0.19.12", "", { "os": "win32", "cpu": "ia32" }, "sha512-+ZOE6pUkMOJfmxmBZElNOx72NKpIa/HFOMGzu8fqzQJ5kgf6aTGrcJaFsNiVMH4JKpMipyK+7k0n2UXN7a8YKQ=="],
 
     "@esbuild/win32-x64": ["@esbuild/win32-x64@0.19.12", "", { "os": "win32", "cpu": "x64" }, "sha512-T1QyPSDCyMXaO3pzBkF96E8xMkiRYbUEZADd29SyPGabqxMViNoii+NcK7eWJAEoU6RZyEm5lVSIjTmcdoB9HA=="],
+
+    "@hono/oauth-providers": ["@hono/oauth-providers@0.7.1", "", { "peerDependencies": { "hono": ">=3.*" } }, "sha512-NJ9weiJ5Af+/Waq0q/DIMofxkKlK32pVl7/iXh/Q0dumRKftn1A41h3d5clsNtwNsKfADErtshbdD1Q89/bFag=="],
 
     "@neondatabase/serverless": ["@neondatabase/serverless@1.0.0", "", { "dependencies": { "@types/node": "^22.10.2", "@types/pg": "^8.8.0" } }, "sha512-XWmEeWpBXIoksZSDN74kftfTnXFEGZ3iX8jbANWBc+ag6dsiQuvuR4LgB0WdCOKMb5AQgjqgufc0TgAsZubUYw=="],
 

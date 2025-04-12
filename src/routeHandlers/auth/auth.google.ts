@@ -1,37 +1,66 @@
 import type { Context } from 'hono';
-import passport from 'passport';
+// import passport from 'passport';
 import { TokenManager } from '../../redis/token.manager';
+import { googleAuth } from '@hono/oauth-providers/google';
 
-export const googleOauth: (c: Context) => Promise<void> = async (c) => {
-  return await new Promise((resolve) => {
-    passport.authenticate('google', {
-      scope: ['profile', 'email'],
-      session: false,
-    })(c, resolve);
-  });
-};
+// export const googleOauth: (c: Context) => Promise<Response> = async (c) => {
+//   const authenticate = () =>
+//     new Promise((resolve, reject) => {
+//       const res = {
+//         ...c.res,
+//         setHeader: (name: string, value: string) => {
+//           c.header(name, value);
+//           return res;
+//         },
+//         end: () => {},
+//         redirect: (url: string) => {
+//           return c.redirect(url);
+//         },
+//         statusCode: 302,
+//         getHeader: (name: string) => c.header(name),
+//         writeHead: (status: number) => {
+//           res.statusCode = status;
+//           return res;
+//         },
+//         headers: {
+//           append: (name: string, value: string) => {
+//             c.res.headers.append(name, value);
+//             return res;
+//           },
+//           set: (name: string, value: string) => {
+//             c.res.headers.set(name, value);
+//             return res;
+//           },
+//         },
+//       };
 
-export const googleCallback: (c: Context) => Promise<Response> = async (c) => {
-  return await new Promise((resolve) => {
-    passport.authenticate('google', {
-      session: false,
-      failureRedirect: '/login',
-    })(c, async (err: any, user: any) => {
-      if (err || !user) {
-        return resolve(c.redirect(`${process.env.CLIENT_URL}/login`));
-      }
+//       c.res = res as unknown as Response;
+//       passport.authenticate('google', {
+//         scope: ['profile', 'email'],
+//         session: false,
+//       })(c.req.raw, c.res, (err: Error) => {
+//         if (err) reject(err);
+//         resolve(c.redirect('https://accounts.google.com/o/oauth2/v2/auth'));
+//       });
+//     });
 
-      // Get tokens from redis
-      const tokens = await TokenManager.getTokens(user.id);
-      if (!tokens) {
-        return resolve(c.redirect(`${process.env.CLIENT_URL}/login`));
-      }
+//   try {
+//     return (await authenticate()) as Response;
+//   } catch (err) {
+//     console.log('Authentication Error: ', err);
+//     return c.redirect(`${process.env.CLIENT_URL}/login`);
+//   }
+// };
 
-      //Set the tokens in cookies or headers
-      c.header('Authorization', `Bearer ${tokens.accessToken}`);
+export const googleOauth: (c: Context) => Response = (c) => {
+  const token = c.get('token');
+  const grantedScopes = c.get('granted-scopes');
+  const user = c.get('user-google');
 
-      return resolve(c.redirect(`${process.env.CLIENT_URL}`));
-    });
+  return c.json({
+    token,
+    grantedScopes,
+    user,
   });
 };
 

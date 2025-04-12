@@ -8,7 +8,7 @@ export const handleCreateExpense = async (c: Context) => {
   try {
     const body = (await c.req.json()) as ExpenseFromClient;
     console.log(body);
-    return c.json({ data: 'Expense has been added successfully' });
+    return c.json({ data: 'Expense has been added successfully', statuscode: 201 });
   } catch (error) {
     if (error instanceof HTTPException) {
       throw error;

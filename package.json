@@ -12,6 +12,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@hono/oauth-providers": "^0.7.1",
     "@neondatabase/serverless": "^1.0.0",
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.16",
