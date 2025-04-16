@@ -9,17 +9,14 @@
     "tsx": "^4.19.3"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5.8.2"
   },
   "dependencies": {
     "@hono/oauth-providers": "^0.7.1",
     "@neondatabase/serverless": "^1.0.0",
-    "@types/passport": "^1.0.17",
-    "@types/passport-google-oauth20": "^2.0.16",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.5.0",
     "drizzle-orm": "^0.41.0",
-    "hono": "^4.7.5",
-    "passport": "^0.7.0",
+    "hono": "^4.7.6",
     "passport-google-oauth20": "^2.0.0"
   }
 }

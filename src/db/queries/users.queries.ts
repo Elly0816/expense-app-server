@@ -13,7 +13,7 @@ export const addUser: (newUser: NewUser) => Promise<NewUser[] | Error> = async (
 
 export const getUser: (user: User) => Promise<User[] | Error> = async (user) => {
   const queriedUsers = await db.select().from(users).where(eq(users.id, user.id));
-  if (queriedUsers.length > 0) {
+  if (queriedUsers) {
     return queriedUsers;
   }
   throw new Error('Error getting the user from the db!');
@@ -21,7 +21,7 @@ export const getUser: (user: User) => Promise<User[] | Error> = async (user) => 
 
 export const getUserById: (id: User['id']) => Promise<User[] | Error> = async (id) => {
   const queriedUsers = await db.select().from(users).where(eq(users.id, id));
-  if (queriedUsers.length > 0) {
+  if (queriedUsers) {
     return queriedUsers;
   }
   throw new Error('Error getting the user from the db!');

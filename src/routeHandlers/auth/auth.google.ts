@@ -1,72 +1,70 @@
-import type { Context } from 'hono';
+import type { Context, MiddlewareHandler } from 'hono';
 // import passport from 'passport';
-import { TokenManager } from '../../redis/token.manager';
-import { googleAuth } from '@hono/oauth-providers/google';
+import { TokenManager, type TokenData } from '../../redis/token.manager';
+import { addUser, getUserById } from '../../db/queries/users.queries';
+import type { User } from '../../db/schema/users';
+import { revokeToken } from '@hono/oauth-providers/google';
 
-// export const googleOauth: (c: Context) => Promise<Response> = async (c) => {
-//   const authenticate = () =>
-//     new Promise((resolve, reject) => {
-//       const res = {
-//         ...c.res,
-//         setHeader: (name: string, value: string) => {
-//           c.header(name, value);
-//           return res;
-//         },
-//         end: () => {},
-//         redirect: (url: string) => {
-//           return c.redirect(url);
-//         },
-//         statusCode: 302,
-//         getHeader: (name: string) => c.header(name),
-//         writeHead: (status: number) => {
-//           res.statusCode = status;
-//           return res;
-//         },
-//         headers: {
-//           append: (name: string, value: string) => {
-//             c.res.headers.append(name, value);
-//             return res;
-//           },
-//           set: (name: string, value: string) => {
-//             c.res.headers.set(name, value);
-//             return res;
-//           },
-//         },
-//       };
-
-//       c.res = res as unknown as Response;
-//       passport.authenticate('google', {
-//         scope: ['profile', 'email'],
-//         session: false,
-//       })(c.req.raw, c.res, (err: Error) => {
-//         if (err) reject(err);
-//         resolve(c.redirect('https://accounts.google.com/o/oauth2/v2/auth'));
-//       });
-//     });
-
-//   try {
-//     return (await authenticate()) as Response;
-//   } catch (err) {
-//     console.log('Authentication Error: ', err);
-//     return c.redirect(`${process.env.CLIENT_URL}/login`);
-//   }
-// };
-
-export const googleOauth: (c: Context) => Response = (c) => {
-  const token = c.get('token');
+export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) => {
+  const access = c.get('token');
   const grantedScopes = c.get('granted-scopes');
   const user = c.get('user-google');
+  const refresh = c.get('refresh-token');
+  // Check the db for the user, if the user is not there, add them. If the user is, store tokens and sign the user in
 
-  return c.json({
-    token,
-    grantedScopes,
-    user,
-  });
+  try {
+    const userFromDB = (await getUserById(user?.id as string)) as User[];
+    if (userFromDB?.length > 0) {
+      c.status(200);
+    } else {
+      try {
+        const newUser = (await addUser({
+          id: user?.id as string,
+          email: user?.email as string,
+          name: `${user?.given_name as string} ${user?.family_name as string}`,
+        })) as User[];
+        if (newUser?.length > 0) {
+          c.status(201);
+        } else {
+          c.status(500);
+        }
+      } catch (error) {
+        c.status(500);
+        return c.body('Error creating the user');
+      }
+    }
+  } catch (error) {
+    c.status(500);
+    return c.body('Error getting the user');
+  }
+
+  try {
+    await TokenManager.storeTokens(
+      user?.id as string,
+      {
+        accessToken: access?.token ?? null,
+        refreshToken: refresh?.token ?? null,
+        accessExpires: access?.expires_in ?? null,
+        refreshExpires: refresh?.expires_in ?? null,
+      } as TokenData
+    );
+  } catch (error) {
+    c.status(500);
+    return c.body('Error storing the tokens');
+  }
+
+  console.log('Access Token: \n');
+  console.log(access);
+  return c.json({ user: user });
 };
 
 export const logout: (c: Context) => Promise<Response> = async (c) => {
   const userId = c.get('user')?.id;
   if (userId) {
+    const accessToken = ((await TokenManager.getTokens(userId)) as TokenData).accessToken;
+    const accessExpires = ((await TokenManager.getTokens(userId)) as TokenData).accessExpires;
+    const token = { token: accessToken, expires_in: accessExpires };
+    revokeToken(JSON.stringify(token));
     await TokenManager.removeTokens(userId);
   }
   return c.redirect(`${process.env.CLIENT_URL}/login`);
