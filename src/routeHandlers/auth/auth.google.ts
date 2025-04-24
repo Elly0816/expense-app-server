@@ -48,14 +48,14 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
         refreshExpires: refresh?.expires_in ?? null,
       } as TokenData
     );
+
+    console.log('Access Token: \n');
+    console.log(access);
+    return c.json({ user: user });
   } catch (error) {
     c.status(500);
     return c.body('Error storing the tokens');
   }
-
-  console.log('Access Token: \n');
-  console.log(access);
-  return c.json({ user: user });
 };
 
 export const logout: (c: Context) => Promise<Response> = async (c) => {

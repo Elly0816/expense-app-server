@@ -17,3 +17,5 @@ export const handleCreateExpense = async (c: Context) => {
     // throw new HTTPException(500, { message: 'Internal Server Error' });
   }
 };
+
+// export const handleGetExpense =
