@@ -1,5 +1,7 @@
 import { Hono } from 'hono';
 import { googleOAuthCallback, logout } from '../../routeHandlers/auth/auth.google';
+import { checkAuth } from '../../middlewares/auth';
+import { authChecker } from '../../routeHandlers/auth/checkAuth';
 
 const auth = new Hono();
 
@@ -8,5 +10,8 @@ auth.get('/google', googleOAuthCallback);
 
 // Handle logout
 auth.get('/logout', logout);
+
+//checks if the user is still authenticated
+auth.get('/check', checkAuth, authChecker);
 
 export default auth;

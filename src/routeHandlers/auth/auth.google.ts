@@ -4,6 +4,7 @@ import { TokenManager, type TokenData } from '../../redis/token.manager';
 import { addUser, getUserById } from '../../db/queries/users.queries';
 import type { User } from '../../db/schema/users';
 import { revokeToken } from '@hono/oauth-providers/google';
+import { setCookie } from 'hono/cookie';
 
 export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) => {
   const access = c.get('token');
@@ -51,7 +52,23 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
 
     console.log('Access Token: \n');
     console.log(access);
-    return c.json({ user: user });
+
+    setCookie(c, 'auth_token', access?.token as string, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'Lax',
+      maxAge: 60 * 60 * 24,
+      path: '/',
+    });
+    setCookie(c, 'user', JSON.stringify(user) as string, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'Lax',
+      path: '/',
+    });
+
+    // return c.json({ user: user });
+    return c.redirect(`${process.env.CLIENT_URL}/`);
   } catch (error) {
     c.status(500);
     return c.body('Error storing the tokens');
