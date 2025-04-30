@@ -9,10 +9,22 @@ declare global {
   }
 }
 
+export type CategoryType =
+  | 'Food & Drinks'
+  | 'Groceries'
+  | 'Shopping'
+  | 'Transport'
+  | 'Entertainment'
+  | 'Utilities'
+  | 'Health & Fitness'
+  | 'Home'
+  | 'Savings';
+// | undefined;
+
 export type ExpenseType = {
-  category: string;
+  category: CategoryType;
   expense: string;
   amount: number;
-  date: string;
+  date: Date;
 };
 export {};

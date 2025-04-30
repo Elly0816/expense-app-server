@@ -20,8 +20,8 @@ export const checkAuth: MiddlewareHandler = async (c: Context, next: Next) => {
   if (user) {
     user = JSON.parse(user as string) as GoogleUser;
   }
-  console.log('This is the user:\n');
-  console.log(user);
+  // console.log('This is the user:\n');
+  // console.log(user);
   if (!authToken || !user) {
     c.status(401);
     console.log('Unauthorized');

@@ -3,12 +3,12 @@ import { pgTable, varchar, integer, text, doublePrecision, date } from 'drizzle-
 import { users } from './users';
 
 export const expenses = pgTable('expenses', {
-  id: text('id').primaryKey(),
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
   category: varchar('string', { length: 255 }).notNull(),
   expense: varchar('expense', { length: 255 }).notNull(),
   amount: doublePrecision('amount').notNull(),
   date: date('date', { mode: 'date' }).defaultNow().notNull(),
-  userId: text('userId'),
+  userId: text('userId').notNull(),
 });
 
 export const expenseRelations = relations(expenses, ({ one }) => ({

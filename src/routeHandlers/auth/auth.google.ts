@@ -13,9 +13,11 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
   const refresh = c.get('refresh-token');
   // Check the db for the user, if the user is not there, add them. If the user is, store tokens and sign the user in
 
+  console.log('Handshake with google successful! \n\n\n\n');
   try {
     const userFromDB = (await getUserById(user?.id as string)) as User[];
     if (userFromDB?.length > 0) {
+      console.log('Created the user successfully!');
       c.status(200);
     } else {
       try {
@@ -31,11 +33,13 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
         }
       } catch (error) {
         c.status(500);
+        console.log('There was an error creating the user! ');
         return c.body('Error creating the user');
       }
     }
   } catch (error) {
     c.status(500);
+    console.log('There was an error getting the user!');
     return c.body('Error getting the user');
   }
 

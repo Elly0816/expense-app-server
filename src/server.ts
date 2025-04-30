@@ -4,6 +4,7 @@ import home from './routes/homeRoute';
 import { expense } from './routes/expense/expense';
 import auth from './routes/auth/auth';
 import { googleOauth } from './middlewares/auth';
+import { logger } from 'hono/logger';
 
 console.log('Environment Variables:', {
   CORS_ORIGIN: process.env.CORS_ORIGIN,
@@ -11,7 +12,7 @@ console.log('Environment Variables:', {
 });
 
 app.use(cors({ origin: Bun.env.CORS_ORIGIN as string, credentials: true }));
-
+app.use(logger());
 //This middleware initiates the oAuth process
 app.use('auth/google', googleOauth());
 app.route('/', home);
