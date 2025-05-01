@@ -34,13 +34,13 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
       } catch (error) {
         c.status(500);
         console.log('There was an error creating the user! ');
-        return c.body('Error creating the user');
+        return c.text('Error creating the user');
       }
     }
   } catch (error) {
     c.status(500);
     console.log('There was an error getting the user!');
-    return c.body('Error getting the user');
+    return c.text('Error getting the user');
   }
 
   try {
@@ -75,7 +75,7 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
     return c.redirect(`${process.env.CLIENT_URL}/`);
   } catch (error) {
     c.status(500);
-    return c.body('Error storing the tokens');
+    return c.text('Error storing the tokens');
   }
 };
 

@@ -8,6 +8,7 @@ export const googleOauth: () => MiddlewareHandler = () => {
     client_id: process.env.GOOGLE_CLIENT_ID,
     scope: ['profile', 'email', 'openid'],
     client_secret: process.env.GOOGLE_CLIENT_SECRET,
+    prompt: 'consent',
   });
 };
 

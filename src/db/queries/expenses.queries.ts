@@ -40,7 +40,7 @@ export const createExpense: (expenseFromUser: createExpenseType) => Promise<NewE
   try {
     const result = await db
       .insert(expenses)
-      .values({ ...expense, userId: userId })
+      .values({ ...expense, userId: userId, date: new Date(expense.date || Date.now()) })
       .returning();
     if (result.length > 0) {
       return result;
@@ -48,6 +48,6 @@ export const createExpense: (expenseFromUser: createExpenseType) => Promise<NewE
     return [];
   } catch (error) {
     console.error('There was an error creating the Expense!');
-    throw new Error('There was an Error creating the Expense!');
+    throw new Error(`There was an error creating the expense:\n${error}`);
   }
 };

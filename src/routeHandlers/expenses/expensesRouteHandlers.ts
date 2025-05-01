@@ -14,8 +14,10 @@ export const handleCreateExpense = async (c: Context) => {
     const userId = (c.get('user-google') as GoogleUser).id;
     console.log(body);
     const result = await createExpense({ expense: body, userId: userId });
-    return c.json({ text: 'Expense has been added successfully', statuscode: 201 });
+    c.status(201);
+    return c.json({ text: 'Expense has been added successfully' });
   } catch (error) {
+    console.error(`There was an error creating the expense: \n${error}`);
     if (error instanceof HTTPException) {
       throw error;
     }
