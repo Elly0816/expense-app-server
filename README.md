@@ -176,7 +176,7 @@ Please ensure your code is well-tested, follows the project's TypeScript and for
 
 ## Related Projects
 
-- [expense-app-client](../expense-app-client) — The Next.js/React frontend for this server.
+- [expense-app-client](https://github.com/Elly0816/expense-app-client) — The Next.js/React frontend for this server.
 
 ---
 
