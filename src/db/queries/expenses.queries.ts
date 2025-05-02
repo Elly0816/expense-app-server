@@ -51,3 +51,13 @@ export const createExpense: (expenseFromUser: createExpenseType) => Promise<NewE
     throw new Error(`There was an error creating the expense:\n${error}`);
   }
 };
+
+export const deleteExpense: (id: number) => Promise<Expense[]> = async (id) => {
+  try {
+    const deletedExpense = await db.delete(expenses).where(eq(expenses.id, id)).returning();
+    return deletedExpense;
+  } catch (error) {
+    console.error('There was an error while deleting the expense from the database!');
+    throw new Error(`There was an error while deleting the expense:\n${error}`);
+  }
+};

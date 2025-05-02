@@ -2,7 +2,11 @@ import type { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import type { Expense } from '../../db/schema/expenses';
 import type { GoogleUser } from '@hono/oauth-providers/google';
-import { createExpense, getExpensesByCategory } from '../../db/queries/expenses.queries';
+import {
+  createExpense,
+  deleteExpense,
+  getExpensesByCategory,
+} from '../../db/queries/expenses.queries';
 import type { CategoryType, ExpenseType } from '../../types';
 import { defaultErrorResponse } from '../../utils/defaultErrorResponse';
 
@@ -45,4 +49,16 @@ export const handleGetExpense: (c: Context) => Promise<Response> = async (c: Con
   }
 
   // return c.json({ data: `The category you're looking for is ${category}` });
+};
+
+export const handleDeleteExpense: (c: Context) => Promise<Response> = async (c: Context) => {
+  const id = c.req.param('id');
+  try {
+    await deleteExpense(Number(id));
+    c.status(200);
+    return c.json({ text: 'Expense deleted successfully' });
+  } catch (error) {
+    c.status(500);
+    return c.json(defaultErrorResponse);
+  }
 };
