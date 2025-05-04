@@ -4,13 +4,11 @@ import { TokenManager, type TokenData } from '../../redis/token.manager';
 import { addUser, getUserById } from '../../db/queries/users.queries';
 import type { User } from '../../db/schema/users';
 import { revokeToken } from '@hono/oauth-providers/google';
-import { setCookie } from 'hono/cookie';
+import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 
 export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) => {
-  const access = c.get('token');
-  const grantedScopes = c.get('granted-scopes');
+  const accessToken = c.get('token');
   const user = c.get('user-google');
-  const refresh = c.get('refresh-token');
   // Check the db for the user, if the user is not there, add them. If the user is, store tokens and sign the user in
 
   console.log('Handshake with google successful! \n\n\n\n');
@@ -43,50 +41,87 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
     return c.text('Error getting the user');
   }
 
-  try {
-    await TokenManager.storeTokens(
-      user?.id as string,
-      {
-        accessToken: access?.token ?? null,
-        refreshToken: refresh?.token ?? null,
-        accessExpires: access?.expires_in ?? null,
-        refreshExpires: refresh?.expires_in ?? null,
-      } as TokenData
-    );
+  const currentTime = Math.floor(Date.now() / 1000);
+  const tokenExpiry = 60 * 60 * 24;
+  // const tokenExpiry = 30;
 
-    console.log('Access Token: \n');
-    console.log(access);
+  setCookie(c, 'token_expiry', String(currentTime + tokenExpiry), {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'Lax',
+    maxAge: tokenExpiry,
+    path: '/',
+  });
 
-    setCookie(c, 'auth_token', access?.token as string, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'Lax',
-      maxAge: 60 * 60 * 24,
-      path: '/',
-    });
-    setCookie(c, 'user', JSON.stringify(user) as string, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'Lax',
-      path: '/',
-    });
+  setCookie(c, 'auth_token', JSON.stringify(accessToken), {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'Lax',
+    maxAge: tokenExpiry,
+    path: '/',
+  });
+  setCookie(c, 'user', JSON.stringify(user) as string, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'Lax',
+    maxAge: tokenExpiry,
+    path: '/',
+  });
 
-    // return c.json({ user: user });
-    return c.redirect(`${process.env.CLIENT_URL}/`);
-  } catch (error) {
-    c.status(500);
-    return c.text('Error storing the tokens');
-  }
+  // return c.json({ user: user });
+  return c.redirect(`${process.env.CLIENT_URL}/`);
+  // try {
+  //   await TokenManager.storeTokens(
+  //     user?.id as string,
+  //     {
+  //       accessToken: access?.token ?? null,
+  //       refreshToken: refresh?.token ?? null,
+  //       accessExpires: access?.expires_in ?? null,
+  //       refreshExpires: refresh?.expires_in ?? null,
+  //     } as TokenData
+  //   );
+
+  //   console.log('Access Token: \n');
+  //   console.log(access);
+
+  // } catch (error) {
+  //   c.status(500);
+  //   return c.text('Error storing the tokens');
+  // }
 };
 
 export const logout: (c: Context) => Promise<Response> = async (c) => {
-  const userId = c.get('user')?.id;
-  if (userId) {
-    const accessToken = ((await TokenManager.getTokens(userId)) as TokenData).accessToken;
-    const accessExpires = ((await TokenManager.getTokens(userId)) as TokenData).accessExpires;
-    const token = { token: accessToken, expires_in: accessExpires };
-    revokeToken(JSON.stringify(token));
-    await TokenManager.removeTokens(userId);
-  }
-  return c.redirect(`${process.env.CLIENT_URL}/login`);
+  const token = c.get('token');
+  revokeToken(token?.token as string);
+  c.set('user-google', undefined);
+  c.set('token', undefined);
+  deleteCookie(c, 'user', {
+    secure: true,
+    path: '/',
+    httpOnly: true,
+    sameSite: 'Lax',
+  });
+  deleteCookie(c, 'auth_token', {
+    secure: true,
+    path: '/',
+    httpOnly: true,
+    sameSite: 'Lax',
+  });
+  deleteCookie(c, 'token_expiry', {
+    secure: true,
+    path: '/',
+    httpOnly: true,
+    sameSite: 'Lax',
+  });
+
+  // if (userId) {
+  //   const accessToken = ((await TokenManager.getTokens(userId)) as TokenData).accessToken;
+  //   const accessExpires = ((await TokenManager.getTokens(userId)) as TokenData).accessExpires;
+  //   const token = { token: accessToken, expires_in: accessExpires };
+  //   revokeToken(JSON.stringify(token));
+  //   await TokenManager.removeTokens(userId);
+  // }
+  // c.header('Access-Control-Allow-Origin', process.env.CORS_ORIGIN);
+  // return c.redirect(`${process.env.CLIENT_URL}/login`);
+  return c.json({ isAuthenticated: false });
 };

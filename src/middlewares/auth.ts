@@ -14,31 +14,49 @@ export const googleOauth: () => MiddlewareHandler = () => {
 
 export const checkAuth: MiddlewareHandler = async (c: Context, next: Next) => {
   // const user = c.get('user-google');
-  // const user = c.get('user-google');
   const authToken = getCookie(c, 'auth_token');
-  // const user = JSON.parse(getCookie(c, 'user') as string) as User;
+  // const authToken = c.get('token');
   let user: GoogleUser | undefined | string = getCookie(c, 'user');
   if (user) {
     user = JSON.parse(user as string) as GoogleUser;
   }
+
+  const tokenExpiry = getCookie(c, 'token_expiry');
   // console.log('This is the user:\n');
   // console.log(user);
-  if (!authToken || !user) {
+  if (!authToken || !user || !tokenExpiry) {
+    c.status(401);
+    console.log('Unauthorized');
+    return c.json({ isAuthenticated: false });
+  }
+  const currentTime = Math.floor(Date.now() / 1000);
+
+  if (currentTime >= parseInt(tokenExpiry)) {
     c.status(401);
     console.log('Unauthorized');
     return c.json({ isAuthenticated: false });
   }
 
   try {
-    const tokens = await TokenManager.getTokens((user as GoogleUser).id as string);
-    if (!tokens || tokens.accessToken !== authToken) {
-      c.status(401);
-      return c.json({ isAuthenticated: false });
-    }
     c.set('user-google', user as GoogleUser);
+    c.set('token', JSON.parse(authToken));
     await next();
   } catch (err) {
+    console.error(`There was an error: \n${err}`);
     c.status(401);
     return c.json({ isAuthenticated: false });
   }
+
+  // try {
+  //   const tokens = await TokenManager.getTokens((user as GoogleUser).id as string);
+  //   if (!tokens || tokens.accessToken !== authToken) {
+  //     c.status(401);
+  //     return c.json({ isAuthenticated: false });
+  //   }
+  //   c.set('user-google', user as GoogleUser);
+  //   await next();
+  // } catch (err) {
+  //   c.status(401);
+  //   return c.json({ isAuthenticated: false });
+  // }
 };
