@@ -7,6 +7,7 @@ import { googleOauth } from './middlewares/auth';
 import { logger } from 'hono/logger';
 import type { Context, MiddlewareHandler, Next } from 'hono';
 import { buildCallbackURL } from './utils/properURLConstruction';
+import { getCookie } from 'hono/cookie';
 
 console.log('Environment Variables:', {
   CORS_ORIGIN: process.env.CORS_ORIGIN,
@@ -35,6 +36,26 @@ app.use(async (c: Context, next: Next): Promise<void | undefined> => {
 });
 app.use(cors({ origin: Bun.env.CORS_ORIGIN as string, credentials: true }));
 app.use(logger());
+
+app.use(async (c: Context, next: Next) => {
+  const cookies = c.req.header('cookie');
+
+  console.log('\n\nHere are the current cookies: ');
+  console.log(cookies);
+  console.log('\n\n');
+
+  const token_expiry = getCookie(c, 'token_expiry');
+  const auth_token = getCookie(c, 'auth_token');
+  const user = getCookie(c, 'user');
+
+  console.log('\n\nHere are the specific cookies: ');
+  console.log(`User: ${user}`);
+  console.log(`Token Expiry: ${token_expiry}`);
+  console.log(`Auth Token: ${auth_token}`);
+  console.log('\n\n');
+
+  return await next();
+});
 //This middleware initiates the oAuth process
 
 // app.use('auth/google', googleOauth());
