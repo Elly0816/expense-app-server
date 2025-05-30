@@ -6,6 +6,7 @@ import auth from './routes/auth/auth';
 import { googleOauth } from './middlewares/auth';
 import { logger } from 'hono/logger';
 import type { Context, MiddlewareHandler, Next } from 'hono';
+import { buildCallbackURL } from './utils/properURLConstruction';
 
 console.log('Environment Variables:', {
   CORS_ORIGIN: process.env.CORS_ORIGIN,
@@ -35,7 +36,15 @@ app.use(async (c: Context, next: Next): Promise<void | undefined> => {
 app.use(cors({ origin: Bun.env.CORS_ORIGIN as string, credentials: true }));
 app.use(logger());
 //This middleware initiates the oAuth process
-app.use('auth/google', async (c: Context): Promise<void> => googleOauth(c));
+
+// app.use('auth/google', googleOauth());
+app.use('auth/google', async (c: Context, next: Next) => {
+  const callbackURL = buildCallbackURL(c);
+
+  const oAuthMiddleware = googleOauth(callbackURL);
+
+  return await oAuthMiddleware(c, next);
+});
 app.route('/', home);
 app.route('/expense', expense);
 app.route('/auth', auth);

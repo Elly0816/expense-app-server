@@ -28,6 +28,7 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
           c.status(201);
         } else {
           c.status(500);
+          return c.text('Error adding the user');
         }
       } catch (error) {
         c.status(500);
@@ -69,6 +70,7 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
   });
 
   // return c.json({ user: user });
+  console.log('Before redirecting');
   return c.redirect(`${process.env.CLIENT_URL}/`);
   // try {
   //   await TokenManager.storeTokens(

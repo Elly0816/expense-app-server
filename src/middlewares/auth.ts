@@ -4,13 +4,16 @@ import { TokenManager } from '../redis/token.manager';
 import { getCookie } from 'hono/cookie';
 import { buildCallbackURL } from '../utils/properURLConstruction';
 
-export const googleOauth: (c: Context) => void = (c) => {
+export const googleOauth: (callbackURL: string) => MiddlewareHandler = (callbackURL) => {
+  console.log('\n\n\nIn the callback');
+  console.log(`client id: ${process.env.GOOGLE_CLIENT_ID}`);
+  console.log(`client secret: ${process.env.GOOGLE_CLIENT_SECRET}\n\n\n`);
   return googleAuth({
     client_id: process.env.GOOGLE_CLIENT_ID,
     scope: ['profile', 'email', 'openid'],
     client_secret: process.env.GOOGLE_CLIENT_SECRET,
     prompt: 'consent',
-    redirect_uri: buildCallbackURL(c),
+    redirect_uri: callbackURL,
   });
 };
 

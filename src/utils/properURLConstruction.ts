@@ -58,7 +58,7 @@ export const buildCallbackURL = (c: Context, path: string = '/auth/google'): str
 
   const newURL = `${finalProtocol}://${host}${path}`;
 
-  console.log(`\n\n\n\n\n\n\n\n\nThis is the new URL: ${newURL}\n\n\n\n\n\n\n\n\n`);
+  console.log(`\n\nThis is the new URL: ${newURL}\n\n`);
 
   return newURL;
 };
