@@ -2,13 +2,15 @@ import { googleAuth, type GoogleUser } from '@hono/oauth-providers/google';
 import type { MiddlewareHandler, Context, Next } from 'hono';
 import { TokenManager } from '../redis/token.manager';
 import { getCookie } from 'hono/cookie';
+import { buildCallbackURL } from '../utils/properURLConstruction';
 
-export const googleOauth: () => MiddlewareHandler = () => {
+export const googleOauth: (c: Context) => MiddlewareHandler = (c) => {
   return googleAuth({
     client_id: process.env.GOOGLE_CLIENT_ID,
     scope: ['profile', 'email', 'openid'],
     client_secret: process.env.GOOGLE_CLIENT_SECRET,
     prompt: 'consent',
+    redirect_uri: buildCallbackURL(c),
   });
 };
 
