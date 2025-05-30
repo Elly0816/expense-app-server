@@ -21,9 +21,7 @@ app.use(async (c: Context, next: Next): Promise<void | undefined> => {
   console.log('METHOD: ', req.raw.method);
   console.log('HEADERS:\n');
 
-  for (const [k, v] of Object.entries(req.raw.headers)) {
-    console.log(`${k}: ${v}`);
-  }
+  console.log(req.raw.headers);
 
   console.log('Specific Proxy Headers:');
   console.log('  x-forwarded-proto:', c.req.header('x-forwarded-proto'));
