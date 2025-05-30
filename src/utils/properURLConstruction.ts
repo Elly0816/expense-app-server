@@ -49,7 +49,7 @@ const getRealHost = (c: Context): string => {
 };
 
 //TODO 3: Main function to construct the proper callback URL
-export const buildCallbackURL = (c: Context, path: string = '/auth/google/callback'): string => {
+export const buildCallbackURL = (c: Context, path: string = '/auth/google'): string => {
   const protocol = getRealProtocol(c);
   const host = getRealHost(c);
 
