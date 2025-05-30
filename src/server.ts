@@ -13,7 +13,7 @@ console.log('Environment Variables:', {
   PORT: process.env.PORT,
 });
 
-app.use(async (c: Context, next: Next): Promise<void> => {
+app.use(async (c: Context, next: Next): Promise<void | undefined> => {
   const req = c.req;
 
   console.log('=== REQUEST DEBUGGING ===');
@@ -29,7 +29,7 @@ app.use(async (c: Context, next: Next): Promise<void> => {
   console.log('req.get("x-forwarded-for"):', req.header('x-forwarded-for'));
   console.log('req.headers:', JSON.stringify(req.header(), null, 2));
   console.log('========================');
-  next();
+  await next();
 });
 app.use(cors({ origin: Bun.env.CORS_ORIGIN as string, credentials: true }));
 app.use(logger());
