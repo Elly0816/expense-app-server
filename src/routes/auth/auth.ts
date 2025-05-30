@@ -6,7 +6,7 @@ import { authChecker } from '../../routeHandlers/auth/checkAuth';
 const auth = new Hono();
 
 // This is the callback route that google's oAuth uses
-auth.get('/google', googleOAuthCallback);
+auth.get('/google/callback', googleOAuthCallback);
 
 // Handle logout
 auth.get('/logout', logout);
