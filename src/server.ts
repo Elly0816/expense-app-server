@@ -35,7 +35,7 @@ app.use(async (c: Context, next: Next): Promise<void | undefined> => {
 app.use(cors({ origin: Bun.env.CORS_ORIGIN as string, credentials: true }));
 app.use(logger());
 //This middleware initiates the oAuth process
-// app.use('auth/google', googleOauth());
+app.use('auth/google', async (c: Context): Promise<void> => googleOauth(c));
 app.route('/', home);
 app.route('/expense', expense);
 app.route('/auth', auth);

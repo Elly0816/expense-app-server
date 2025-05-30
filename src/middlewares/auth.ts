@@ -4,7 +4,7 @@ import { TokenManager } from '../redis/token.manager';
 import { getCookie } from 'hono/cookie';
 import { buildCallbackURL } from '../utils/properURLConstruction';
 
-export const googleOauth: (c: Context) => MiddlewareHandler = (c) => {
+export const googleOauth: (c: Context) => void = (c) => {
   return googleAuth({
     client_id: process.env.GOOGLE_CLIENT_ID,
     scope: ['profile', 'email', 'openid'],
