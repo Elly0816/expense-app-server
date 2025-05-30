@@ -6,7 +6,6 @@ import auth from './routes/auth/auth';
 import { googleOauth } from './middlewares/auth';
 import { logger } from 'hono/logger';
 import type { Context, Next } from 'hono';
-import { getConnInfo } from 'hono/bun';
 
 console.log('Environment Variables:', {
   CORS_ORIGIN: process.env.CORS_ORIGIN,
@@ -17,18 +16,22 @@ app.use(async (c: Context, next: Next): Promise<void | undefined> => {
   const req = c.req;
 
   console.log('=== REQUEST DEBUGGING ===');
-  const info = getConnInfo(c);
-  console.log(`The connection info is: `);
-  console.log(info);
-  console.log('\n');
-  // console.log('req.protocol:', req.protocol);
-  // console.log('req.secure:', req.secure);
-  // console.log('req.get("host"):', req.get('host'));
 
-  console.log('req.get("x-forwarded-proto"):', req.header('x-forwarded-proto'));
-  console.log('req.get("x-forwarded-for"):', req.header('x-forwarded-for'));
-  console.log('req.headers:', JSON.stringify(req.header(), null, 2));
-  console.log('========================');
+  console.log('URL: ', req.raw.url);
+  console.log('METHOD: ', req.raw.method);
+  console.log('HEADERS:\n');
+
+  for (const [k, v] of Object.entries(req.raw.headers)) {
+    console.log(`${k}: ${v}`);
+  }
+
+  console.log('Specific Proxy Headers:');
+  console.log('  x-forwarded-proto:', c.req.header('x-forwarded-proto'));
+  console.log('  x-forwarded-host:', c.req.header('x-forwarded-host'));
+  console.log('  x-forwarded-for:', c.req.header('x-forwarded-for'));
+  console.log('  host:', c.req.header('host'));
+  console.log('================================');
+
   await next();
 });
 app.use(cors({ origin: Bun.env.CORS_ORIGIN as string, credentials: true }));
