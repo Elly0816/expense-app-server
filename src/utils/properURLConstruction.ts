@@ -56,5 +56,9 @@ export const buildCallbackURL = (c: Context, path: string = '/auth/google'): str
   // In prod, always force HTTPS regardless of what we detect
   const finalProtocol = process.env.NODE_ENV === 'production' ? 'https' : protocol;
 
-  return `${finalProtocol}://${host}${path}`;
+  const newURL = `${finalProtocol}://${host}${path}`;
+
+  console.log(`\n\n\n\n\n\n\n\n\nThis is the new URL: ${newURL}\n\n\n\n\n\n\n\n\n`);
+
+  return newURL;
 };
