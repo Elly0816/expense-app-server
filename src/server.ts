@@ -5,7 +5,7 @@ import { expense } from './routes/expense/expense';
 import auth from './routes/auth/auth';
 import { googleOauth } from './middlewares/auth';
 import { logger } from 'hono/logger';
-import type { Context, Next } from 'hono';
+import type { Context, MiddlewareHandler, Next } from 'hono';
 
 console.log('Environment Variables:', {
   CORS_ORIGIN: process.env.CORS_ORIGIN,
