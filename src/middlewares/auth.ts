@@ -30,6 +30,7 @@ export const checkAuth: MiddlewareHandler = async (c: Context, next: Next) => {
   // console.log('This is the user:\n');
   // console.log(user);
   if (!authToken || !user || !tokenExpiry) {
+    console.log('Could not find any of the cookies');
     c.status(401);
     console.log('Unauthorized');
     return c.json({ isAuthenticated: false });
