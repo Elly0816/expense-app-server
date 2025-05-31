@@ -34,7 +34,8 @@ app.use(async (c: Context, next: Next): Promise<void | undefined> => {
 
   await next();
 });
-app.use(cors({ origin: Bun.env.CORS_ORIGIN as string, credentials: true }));
+
+app.use(cors({ origin: process.env.CORS_ORIGIN as string, credentials: true }));
 app.use(logger());
 
 app.use(async (c: Context, next: Next) => {

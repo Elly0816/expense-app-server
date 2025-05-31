@@ -5,6 +5,8 @@ import { addUser, getUserById } from '../../db/queries/users.queries';
 import type { User } from '../../db/schema/users';
 import { revokeToken } from '@hono/oauth-providers/google';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
+import type { CookieOptions } from 'hono/utils/cookie';
+import { isProd } from '../../utils/isProd';
 
 export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) => {
   const accessToken = c.get('token');
@@ -46,28 +48,17 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
   const tokenExpiry = 60 * 60 * 24;
   // const tokenExpiry = 30;
 
-  setCookie(c, 'token_expiry', String(currentTime + tokenExpiry), {
+  const cookieOptions: CookieOptions = {
     httpOnly: true,
-    secure: true,
-    sameSite: 'None',
+    secure: false,
+    sameSite: isProd() ? 'none' : 'lax',
     maxAge: tokenExpiry,
     path: '/',
-  });
+  };
 
-  setCookie(c, 'auth_token', JSON.stringify(accessToken), {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'None',
-    maxAge: tokenExpiry,
-    path: '/',
-  });
-  setCookie(c, 'user', JSON.stringify(user) as string, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'None',
-    maxAge: tokenExpiry,
-    path: '/',
-  });
+  setCookie(c, 'token_expiry', String(currentTime + tokenExpiry), cookieOptions);
+  setCookie(c, 'auth_token', JSON.stringify(accessToken), cookieOptions);
+  setCookie(c, 'user', JSON.stringify(user) as string, cookieOptions);
 
   // return c.json({ user: user });
   console.log('Before redirecting');
