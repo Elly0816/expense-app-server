@@ -49,7 +49,7 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
   setCookie(c, 'token_expiry', String(currentTime + tokenExpiry), {
     httpOnly: true,
     secure: true,
-    sameSite: 'Lax',
+    sameSite: 'None',
     maxAge: tokenExpiry,
     path: '/',
   });
@@ -57,14 +57,14 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
   setCookie(c, 'auth_token', JSON.stringify(accessToken), {
     httpOnly: true,
     secure: true,
-    sameSite: 'Lax',
+    sameSite: 'None',
     maxAge: tokenExpiry,
     path: '/',
   });
   setCookie(c, 'user', JSON.stringify(user) as string, {
     httpOnly: true,
     secure: true,
-    sameSite: 'Lax',
+    sameSite: 'None',
     maxAge: tokenExpiry,
     path: '/',
   });
@@ -101,19 +101,19 @@ export const logout: (c: Context) => Promise<Response> = async (c) => {
     secure: true,
     path: '/',
     httpOnly: true,
-    sameSite: 'Lax',
+    sameSite: 'None',
   });
   deleteCookie(c, 'auth_token', {
     secure: true,
     path: '/',
     httpOnly: true,
-    sameSite: 'Lax',
+    sameSite: 'None',
   });
   deleteCookie(c, 'token_expiry', {
     secure: true,
     path: '/',
     httpOnly: true,
-    sameSite: 'Lax',
+    sameSite: 'None',
   });
 
   // if (userId) {
