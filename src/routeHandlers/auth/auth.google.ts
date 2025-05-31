@@ -50,7 +50,7 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
 
   const cookieOptions: CookieOptions = {
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: isProd() ? 'none' : 'lax',
     maxAge: tokenExpiry,
     path: '/',
