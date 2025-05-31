@@ -35,7 +35,20 @@ app.use(async (c: Context, next: Next): Promise<void | undefined> => {
   await next();
 });
 
-app.use(cors({ origin: process.env.CORS_ORIGIN as string, credentials: true }));
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN as string,
+    credentials: true,
+    allowHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With', // Some frontend frameworks add this automatically
+    ],
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    // Expose headers that your frontend might need to read
+    exposeHeaders: ['Set-Cookie'],
+  })
+);
 app.use(logger());
 
 app.use(async (c: Context, next: Next) => {
