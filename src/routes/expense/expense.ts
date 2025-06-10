@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import {
   handleCreateExpense,
   handleDeleteExpense,
+  handleGetByDateRange,
   handleGetExpense,
 } from '../../routeHandlers/expenses/expensesRouteHandlers';
 import { checkAuth } from '../../middlewares/auth';
@@ -12,3 +13,4 @@ expense.use(checkAuth);
 expense.post('/', handleCreateExpense);
 expense.get('/:category', handleGetExpense);
 expense.delete('/:id', handleDeleteExpense);
+expense.get('/date-range/:startDate/:endDate', handleGetByDateRange);

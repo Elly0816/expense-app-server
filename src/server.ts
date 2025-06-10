@@ -30,48 +30,48 @@ app.use(
   })
 );
 
-app.use(async (c: Context, next: Next): Promise<void | undefined> => {
-  const req = c.req;
+// app.use(async (c: Context, next: Next): Promise<void | undefined> => {
+//   const req = c.req;
 
-  console.log('=== REQUEST DEBUGGING ===');
+//   console.log('=== REQUEST DEBUGGING ===');
 
-  console.log('URL: ', req.raw.url);
-  console.log('METHOD: ', req.raw.method);
-  console.log('HEADERS:\n');
+//   console.log('URL: ', req.raw.url);
+//   console.log('METHOD: ', req.raw.method);
+//   console.log('HEADERS:\n');
 
-  console.log(req.raw.headers);
+//   console.log(req.raw.headers);
 
-  console.log('Specific Proxy Headers:');
-  console.log('  x-forwarded-proto:', c.req.header('x-forwarded-proto'));
-  console.log('  x-forwarded-host:', c.req.header('x-forwarded-host'));
-  console.log('  x-forwarded-for:', c.req.header('x-forwarded-for'));
-  console.log('  host:', c.req.header('host'));
-  console.log('================================');
+//   console.log('Specific Proxy Headers:');
+//   console.log('  x-forwarded-proto:', c.req.header('x-forwarded-proto'));
+//   console.log('  x-forwarded-host:', c.req.header('x-forwarded-host'));
+//   console.log('  x-forwarded-for:', c.req.header('x-forwarded-for'));
+//   console.log('  host:', c.req.header('host'));
+//   console.log('================================');
 
-  await next();
-});
+//   await next();
+// });
 
 app.use(logger());
 
-app.use(async (c: Context, next: Next) => {
-  const cookies = c.req.header('cookie');
+// app.use(async (c: Context, next: Next) => {
+//   const cookies = c.req.header('cookie');
 
-  console.log('\n\nHere are the current cookies: ');
-  console.log(cookies);
-  console.log('\n\n');
+//   console.log('\n\nHere are the current cookies: ');
+//   console.log(cookies);
+//   console.log('\n\n');
 
-  const token_expiry = getCookie(c, 'token_expiry');
-  const auth_token = getCookie(c, 'auth_token');
-  const user = getCookie(c, 'user');
+//   const token_expiry = getCookie(c, 'token_expiry');
+//   const auth_token = getCookie(c, 'auth_token');
+//   const user = getCookie(c, 'user');
 
-  console.log('\n\nHere are the specific cookies: ');
-  console.log(`User: ${user}`);
-  console.log(`Token Expiry: ${token_expiry}`);
-  console.log(`Auth Token: ${auth_token}`);
-  console.log('\n\n');
+//   console.log('\n\nHere are the specific cookies: ');
+//   console.log(`User: ${user}`);
+//   console.log(`Token Expiry: ${token_expiry}`);
+//   console.log(`Auth Token: ${auth_token}`);
+//   console.log('\n\n');
 
-  return await next();
-});
+//   return await next();
+// });
 //This middleware initiates the oAuth process
 
 // app.use('auth/google', googleOauth());

@@ -1,4 +1,4 @@
-import { eq, and } from 'drizzle-orm';
+import { eq, and, between } from 'drizzle-orm';
 import db from '..';
 import type { CategoryType } from '../../types';
 import { expenses, type Expense, type NewExpense } from '../schema/expenses';
@@ -10,6 +10,17 @@ type userExpenseByCategoryType = {
 
 type createExpenseType = {
   expense: Omit<NewExpense, 'userId'>;
+  userId: string;
+};
+
+type deleteExpenseType = {
+  id: number;
+  userId: string;
+};
+
+type userExpenseByDate = {
+  startDate: Date;
+  endDate: Date;
   userId: string;
 };
 
@@ -29,6 +40,26 @@ export const getExpensesByCategory: ({
   } catch (error) {
     console.error('There was an error getting the expense', error);
     throw new Error('There was an error getting the expense');
+  }
+};
+
+export const getExpenseByDate: ({
+  startDate,
+  endDate,
+  userId,
+}: userExpenseByDate) => Promise<Expense[]> = async ({ startDate, endDate, userId }) => {
+  try {
+    const result = await db
+      .select()
+      .from(expenses)
+      .where(and(eq(expenses.userId, userId), between(expenses.date, startDate, endDate)));
+    if (result.length > 0) {
+      return result;
+    }
+    return [];
+  } catch (error) {
+    console.log(`There was an error getting the expense: ${error}`);
+    throw new Error('There was an expense getting the expense');
   }
 };
 
@@ -52,9 +83,15 @@ export const createExpense: (expenseFromUser: createExpenseType) => Promise<NewE
   }
 };
 
-export const deleteExpense: (id: number) => Promise<Expense[]> = async (id) => {
+export const deleteExpense: ({ id, userId }: deleteExpenseType) => Promise<Expense[]> = async ({
+  id,
+  userId,
+}) => {
   try {
-    const deletedExpense = await db.delete(expenses).where(eq(expenses.id, id)).returning();
+    const deletedExpense = await db
+      .delete(expenses)
+      .where(and(eq(expenses.id, id), eq(expenses.userId, userId)))
+      .returning();
     return deletedExpense;
   } catch (error) {
     console.error('There was an error while deleting the expense from the database!');

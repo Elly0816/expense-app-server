@@ -5,6 +5,7 @@ import type { GoogleUser } from '@hono/oauth-providers/google';
 import {
   createExpense,
   deleteExpense,
+  getExpenseByDate,
   getExpensesByCategory,
 } from '../../db/queries/expenses.queries';
 import type { CategoryType, ExpenseType } from '../../types';
@@ -53,12 +54,37 @@ export const handleGetExpense: (c: Context) => Promise<Response> = async (c: Con
 
 export const handleDeleteExpense: (c: Context) => Promise<Response> = async (c: Context) => {
   const id = c.req.param('id');
+  const userId = (c.get('user-google') as GoogleUser).id;
   try {
-    await deleteExpense(Number(id));
+    await deleteExpense({ id: Number(id), userId: userId });
     c.status(200);
     return c.json({ text: 'Expense deleted successfully' });
   } catch (error) {
     c.status(500);
     return c.json(defaultErrorResponse);
   }
+};
+
+export const handleGetByDateRange: (c: Context) => Promise<Response> = async (c: Context) => {
+  let startDate: string | Date = c.req.param('startDate');
+  let endDate: string | Date = c.req.param('endDate');
+  const userId = (c.get('user-google') as GoogleUser).id;
+  startDate = new Date(startDate);
+  endDate = new Date(endDate);
+  console.log(`This is the start Date: ${startDate}`);
+  console.log(`This is the end Date: ${endDate}`);
+  try {
+    const expenses = await getExpenseByDate({
+      endDate: endDate,
+      startDate: startDate,
+      userId: userId,
+    });
+    c.status(200);
+    return c.json({ expenses: expenses });
+  } catch (error) {
+    console.error('There was an error getting the expense', error);
+    c.status(500);
+    return c.json(defaultErrorResponse);
+  }
+  // return c.json({ startDate: startDate, endDate: endDate });
 };
