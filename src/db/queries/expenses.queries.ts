@@ -22,6 +22,7 @@ type userExpenseByDate = {
   startDate: Date;
   endDate: Date;
   userId: string;
+  category: CategoryType | undefined;
 };
 
 export const getExpensesByCategory: ({
@@ -47,12 +48,33 @@ export const getExpenseByDate: ({
   startDate,
   endDate,
   userId,
-}: userExpenseByDate) => Promise<Expense[]> = async ({ startDate, endDate, userId }) => {
+  category,
+}: userExpenseByDate) => Promise<Expense[]> = async ({ startDate, endDate, userId, category }) => {
+  console.log(`Here are the dates of the query: startDate: ${startDate}, endDate: ${endDate}`);
   try {
-    const result = await db
+    let result: Expense[];
+    if (!category) {
+      result = await db
+        .select()
+        .from(expenses)
+        .where(and(eq(expenses.userId, userId), between(expenses.date, startDate, endDate)));
+      console.log(`Here are the results of the query: result: ${result}`);
+      if (result.length > 0) {
+        return result;
+      }
+      return [];
+    }
+    result = await db
       .select()
       .from(expenses)
-      .where(and(eq(expenses.userId, userId), between(expenses.date, startDate, endDate)));
+      .where(
+        and(
+          eq(expenses.userId, userId),
+          between(expenses.date, startDate, endDate),
+          eq(expenses.category, category)
+        )
+      );
+    console.log(`Here are the results of the query: result: ${result}`);
     if (result.length > 0) {
       return result;
     }
