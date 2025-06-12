@@ -50,7 +50,9 @@ export const getExpenseByDate: ({
   userId,
   category,
 }: userExpenseByDate) => Promise<Expense[]> = async ({ startDate, endDate, userId, category }) => {
-  console.log(`Here are the dates of the query: startDate: ${startDate}, endDate: ${endDate}`);
+  //console.log(`\n\nstartDate: ${startDate}\nendDate: ${endDate}`);
+  //console.log(`Here is the userId: ${userId}`);
+  //console.log(`Here is the category: ${category}`);
   try {
     let result: Expense[];
     if (!category) {
@@ -58,7 +60,7 @@ export const getExpenseByDate: ({
         .select()
         .from(expenses)
         .where(and(eq(expenses.userId, userId), between(expenses.date, startDate, endDate)));
-      console.log(`Here are the results of the query: result: ${result}`);
+      //console.log(`Here are the results of the query: result: ${result}`);
       if (result.length > 0) {
         return result;
       }
@@ -74,13 +76,13 @@ export const getExpenseByDate: ({
           eq(expenses.category, category)
         )
       );
-    console.log(`Here are the results of the query: result: ${result}`);
+    //console.log(`Here are the results of the query: result: ${result}`);
     if (result.length > 0) {
       return result;
     }
     return [];
   } catch (error) {
-    console.log(`There was an error getting the expense: ${error}`);
+    //console.log(`There was an error getting the expense: ${error}`);
     throw new Error('There was an expense getting the expense');
   }
 };

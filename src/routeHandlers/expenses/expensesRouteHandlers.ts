@@ -8,6 +8,7 @@ import {
 } from '../../db/queries/expenses.queries';
 import type { CategoryType, ExpenseType } from '../../types';
 import { defaultErrorResponse } from '../../utils/defaultErrorResponse';
+import { convertToYMD } from '../../utils/convertToYMD';
 
 type ExpenseFromClient = Omit<ExpenseType, 'id'>;
 
@@ -15,7 +16,7 @@ export const handleCreateExpense = async (c: Context) => {
   try {
     const body = (await c.req.json()) as ExpenseFromClient;
     const userId = (c.get('user-google') as GoogleUser).id;
-    console.log(body);
+    //console.log(body);
     const result = await createExpense({ expense: body, userId: userId });
     c.status(201);
     return c.json({ text: 'Expense has been added successfully' });
@@ -33,7 +34,7 @@ export const handleGetExpense: (c: Context) => Promise<Response> = async (c: Con
   const category = c.req.param('category') as CategoryType;
   const userId = (c.get('user-google') as GoogleUser).id;
 
-  console.log('This is the category: ', category);
+  // //console.log('This is the category: ', category);
   try {
     const expenses = await getExpensesByCategory({ category, userId });
     c.status(200);
@@ -73,8 +74,8 @@ export const handleGetByDateRange: (c: Context) => Promise<Response> = async (c:
   const userId = (c.get('user-google') as GoogleUser).id;
   startDate = new Date(startDate);
   endDate = new Date(endDate);
-  console.log(`This is the start Date: ${startDate}`);
-  console.log(`This is the end Date: ${endDate}`);
+  // //console.log(`This is the start Date: ${startDate}`);
+  // //console.log(`This is the end Date: ${endDate}`);
   try {
     const expenses = await getExpenseByDate({
       endDate: endDate,
@@ -89,7 +90,6 @@ export const handleGetByDateRange: (c: Context) => Promise<Response> = async (c:
     c.status(500);
     return c.json(defaultErrorResponse);
   }
-  // return c.json({ startDate: startDate, endDate: endDate });
 };
 
 export const handleGetPastDay: (c: Context) => Promise<Response> = async (c) => {
@@ -103,25 +103,28 @@ export const handleGetPastDay: (c: Context) => Promise<Response> = async (c) => 
   currentDay = new Date(currentDay);
   const pastDay = new Date(currentDay.getTime() - 24 * 60 * 60 * 1000);
   const twoDaysAgo = new Date(pastDay.getTime() - 24 * 60 * 60 * 1000);
+  //console.log('For past day');
 
   try {
-    const expenseOverThePastDay = await getExpenseByDate({
-      startDate: currentDay,
-      endDate: pastDay,
-      userId: userId,
-      category: category as CategoryType,
-    });
-    const expenseOverPriorDays = await getExpenseByDate({
-      startDate: pastDay,
-      endDate: twoDaysAgo,
-      userId: userId,
-      category: category as CategoryType,
-    });
+    const [expenseOverThePastDay, expenseOverPriorDays] = await Promise.all([
+      getExpenseByDate({
+        endDate: convertToYMD(currentDay),
+        startDate: convertToYMD(pastDay),
+        userId: userId,
+        category: category as CategoryType,
+      }),
+      getExpenseByDate({
+        endDate: convertToYMD(pastDay),
+        startDate: convertToYMD(twoDaysAgo),
+        userId: userId,
+        category: category as CategoryType,
+      }),
+    ]);
 
     c.status(200);
     return c.json({ expenses: { last: expenseOverThePastDay, prior: expenseOverPriorDays } });
   } catch (error) {
-    console.log('There was an error getting the expenses', error);
+    //console.log('There was an error getting the expenses', error);
     c.status(500);
     return c.json(defaultErrorResponse);
   }
@@ -138,24 +141,26 @@ export const handleGetPastWeek: (c: Context) => Promise<Response> = async (c) =>
   currentDay = new Date(currentDay);
   const lastWeek = new Date(currentDay.getTime() - 7 * 24 * 60 * 60 * 1000);
   const twoWeeksAgo = new Date(lastWeek.getTime() - 7 * 24 * 60 * 60 * 1000);
+  //console.log('For past week');
   try {
-    const expenseOverThePastWeek = await getExpenseByDate({
-      startDate: currentDay,
-      endDate: lastWeek,
-      userId: userId,
-      category: category as CategoryType,
-    });
-    const expenseOverPriorWeek = await getExpenseByDate({
-      startDate: lastWeek,
-      endDate: twoWeeksAgo,
-      userId: userId,
-      category: category as CategoryType,
-    });
-
+    const [expenseOverThePastWeek, expenseOverPriorWeek] = await Promise.all([
+      getExpenseByDate({
+        endDate: convertToYMD(currentDay),
+        startDate: convertToYMD(lastWeek),
+        userId: userId,
+        category: category as CategoryType,
+      }),
+      getExpenseByDate({
+        endDate: convertToYMD(lastWeek),
+        startDate: convertToYMD(twoWeeksAgo),
+        userId: userId,
+        category: category as CategoryType,
+      }),
+    ]);
     c.status(200);
     return c.json({ expenses: { last: expenseOverThePastWeek, prior: expenseOverPriorWeek } });
   } catch (error) {
-    console.log('There was an error getting the expenses', error);
+    //console.log('There was an error getting the expenses', error);
     c.status(500);
     return c.json(defaultErrorResponse);
   }
@@ -181,25 +186,28 @@ export const handleGetPastMonth: (c: Context) => Promise<Response> = async (c) =
     currentDay.getMonth() - 2,
     currentDay.getDate()
   );
+  //console.log('For past month');
 
   try {
-    const expenseOverThePastMonth = await getExpenseByDate({
-      startDate: currentDay,
-      endDate: lastMonth,
-      userId: userId,
-      category: category as CategoryType,
-    });
-    const expenseOverPriorMonth = await getExpenseByDate({
-      startDate: lastMonth,
-      endDate: twoMonthsAgo,
-      userId: userId,
-      category: category as CategoryType,
-    });
+    const [expenseOverThePastMonth, expenseOverPriorMonth] = await Promise.all([
+      getExpenseByDate({
+        endDate: convertToYMD(currentDay),
+        startDate: convertToYMD(lastMonth),
+        userId: userId,
+        category: category as CategoryType,
+      }),
+      getExpenseByDate({
+        endDate: convertToYMD(lastMonth),
+        startDate: convertToYMD(twoMonthsAgo),
+        userId: userId,
+        category: category as CategoryType,
+      }),
+    ]);
 
     c.status(200);
     return c.json({ expenses: { last: expenseOverThePastMonth, prior: expenseOverPriorMonth } });
   } catch (error) {
-    console.log('There was an error getting the expenses', error);
+    //console.log('There was an error getting the expenses', error);
     c.status(500);
     return c.json(defaultErrorResponse);
   }
@@ -220,6 +228,7 @@ export const handleGetPastYear: (c: Context) => Promise<Response> = async (c) =>
     currentDay.getMonth(),
     currentDay.getDate()
   );
+  //console.log('For past year');
   const twoYearsAgo = new Date(
     currentDay.getFullYear() - 2,
     currentDay.getMonth(),
@@ -227,23 +236,25 @@ export const handleGetPastYear: (c: Context) => Promise<Response> = async (c) =>
   );
 
   try {
-    const expenseOverThePastYear = await getExpenseByDate({
-      startDate: currentDay,
-      endDate: lastYear,
-      userId: userId,
-      category: category as CategoryType,
-    });
-    const expenseOverPriorYear = await getExpenseByDate({
-      startDate: lastYear,
-      endDate: twoYearsAgo,
-      userId: userId,
-      category: category as CategoryType,
-    });
+    const [expenseOverThePastYear, expenseOverPriorYear] = await Promise.all([
+      getExpenseByDate({
+        endDate: convertToYMD(currentDay),
+        startDate: convertToYMD(lastYear),
+        userId: userId,
+        category: category as CategoryType,
+      }),
+      getExpenseByDate({
+        endDate: convertToYMD(lastYear),
+        startDate: convertToYMD(twoYearsAgo),
+        userId: userId,
+        category: category as CategoryType,
+      }),
+    ]);
 
     c.status(200);
     return c.json({ expenses: { last: expenseOverThePastYear, prior: expenseOverPriorYear } });
   } catch (error) {
-    console.log('There was an error getting the expenses', error);
+    //console.log('There was an error getting the expenses', error);
     c.status(500);
     return c.json(defaultErrorResponse);
   }

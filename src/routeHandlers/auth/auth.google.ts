@@ -13,11 +13,11 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
   const user = c.get('user-google');
   // Check the db for the user, if the user is not there, add them. If the user is, store tokens and sign the user in
 
-  console.log('Handshake with google successful! \n\n\n\n');
+  //console.log('Handshake with google successful! \n\n\n\n');
   try {
     const userFromDB = (await getUserById(user?.id as string)) as User[];
     if (userFromDB?.length > 0) {
-      console.log('Created the user successfully!');
+      //console.log('Created the user successfully!');
       c.status(200);
     } else {
       try {
@@ -34,13 +34,13 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
         }
       } catch (error) {
         c.status(500);
-        console.log('There was an error creating the user! ');
+        //console.log('There was an error creating the user! ');
         return c.text('Error creating the user');
       }
     }
   } catch (error) {
     c.status(500);
-    console.log('There was an error getting the user!');
+    //console.log('There was an error getting the user!');
     return c.text('Error getting the user');
   }
 
@@ -61,7 +61,7 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
   setCookie(c, 'user', JSON.stringify(user) as string, cookieOptions);
 
   // return c.json({ user: user });
-  console.log('Before redirecting');
+  //console.log('Before redirecting');
   return c.redirect(`${process.env.CLIENT_URL}/`);
   // try {
   //   await TokenManager.storeTokens(
@@ -74,8 +74,8 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
   //     } as TokenData
   //   );
 
-  //   console.log('Access Token: \n');
-  //   console.log(access);
+  //   //console.log('Access Token: \n');
+  //   //console.log(access);
 
   // } catch (error) {
   //   c.status(500);

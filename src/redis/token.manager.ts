@@ -20,8 +20,8 @@ export class TokenManager {
     await client.hmset(key, this.convertTokensToStringArray(tokens));
     await client.expire(key, this.TOKEN_EXPIRY);
     const myTokens = await this.getTokens(userId);
-    console.log('myTokens:\n');
-    console.log(myTokens);
+    //console.log('myTokens:\n');
+    //console.log(myTokens);
   }
 
   static async getTokens(userId: string): Promise<TokenData | null> {
@@ -33,7 +33,7 @@ export class TokenManager {
       'refreshExpires',
     ]);
     if (tokens.length == 4) {
-      console.log(tokens);
+      //console.log(tokens);
       return {
         accessToken: tokens[0] as string,
         refreshToken: tokens[1] as string,
@@ -54,7 +54,7 @@ export class TokenManager {
   private static convertTokensToStringArray(token: TokenData): string[] {
     const items: string[] = [];
     for (const [k, v] of Object.entries(token)) {
-      console.log('key: ', k, '; value: ', v);
+      //console.log('key: ', k, '; value: ', v);
       items.push(k, v ? v.toString() : '');
     }
     return items;

@@ -5,7 +5,7 @@ const client: RedisClient = new RedisClient(process.env.REDIS_DB);
 async function connect() {
   try {
     await client.connect();
-    console.log('Connected to redis successfully');
+    //console.log('Connected to redis successfully');
   } catch (error) {
     console.error('Redis connection error', error);
     // throw error;

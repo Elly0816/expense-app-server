@@ -5,9 +5,9 @@ import { getCookie } from 'hono/cookie';
 import { buildCallbackURL } from '../utils/properURLConstruction';
 
 export const googleOauth: (callbackURL: string) => MiddlewareHandler = (callbackURL) => {
-  console.log('\n\n\nIn the callback');
-  console.log(`client id: ${process.env.GOOGLE_CLIENT_ID}`);
-  console.log(`client secret: ${process.env.GOOGLE_CLIENT_SECRET}\n\n\n`);
+  //console.log('\n\n\nIn the callback');
+  //console.log(`client id: ${process.env.GOOGLE_CLIENT_ID}`);
+  //console.log(`client secret: ${process.env.GOOGLE_CLIENT_SECRET}\n\n\n`);
   return googleAuth({
     client_id: process.env.GOOGLE_CLIENT_ID,
     scope: ['profile', 'email', 'openid'],
@@ -27,19 +27,19 @@ export const checkAuth: MiddlewareHandler = async (c: Context, next: Next) => {
   }
 
   const tokenExpiry = getCookie(c, 'token_expiry');
-  // console.log('This is the user:\n');
-  // console.log(user);
+  // //console.log('This is the user:\n');
+  // //console.log(user);
   if (!authToken || !user || !tokenExpiry) {
-    console.log('Could not find any of the cookies');
+    //console.log('Could not find any of the cookies');
     c.status(401);
-    console.log('Unauthorized');
+    //console.log('Unauthorized');
     return c.json({ isAuthenticated: false });
   }
   const currentTime = Math.floor(Date.now() / 1000);
 
   if (currentTime >= parseInt(tokenExpiry)) {
     c.status(401);
-    console.log('Unauthorized');
+    //console.log('Unauthorized');
     return c.json({ isAuthenticated: false });
   }
 

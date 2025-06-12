@@ -9,7 +9,7 @@ const auth = new Hono();
 auth.get(
   '/google',
   //   (c: Context, next: Next) => {
-  //     console.log(
+  //     //console.log(
   //       '\n\n\nThis is a GET request to the auth/google endpoint from within a middleware in the auth get route\n\n\n'
   //     );
   //     next();

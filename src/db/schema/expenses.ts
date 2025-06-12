@@ -4,7 +4,7 @@ import { users } from './users';
 
 export const expenses = pgTable('expenses', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  category: varchar('string', { length: 255 }).notNull(),
+  category: varchar('category', { length: 255 }).notNull(),
   expense: varchar('expense', { length: 255 }).notNull(),
   amount: doublePrecision('amount').notNull(),
   date: date('date', { mode: 'date' }).defaultNow().notNull(),
