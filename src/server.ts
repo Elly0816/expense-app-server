@@ -9,7 +9,7 @@ import type { Context, MiddlewareHandler, Next } from 'hono';
 import { buildCallbackURL } from './utils/properURLConstruction';
 import { getCookie } from 'hono/cookie';
 
-console.log('Environment Variables:', {
+//console.log('Environment Variables:', {
   CORS_ORIGIN: process.env.CORS_ORIGIN,
   PORT: process.env.PORT,
 });

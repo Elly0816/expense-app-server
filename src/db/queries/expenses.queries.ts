@@ -39,7 +39,7 @@ export const getExpensesByCategory: ({
     }
     return [];
   } catch (error) {
-    console.error('There was an error getting the expense', error);
+    //console.error('There was an error getting the expense', error);
     throw new Error('There was an error getting the expense');
   }
 };
@@ -102,7 +102,7 @@ export const createExpense: (expenseFromUser: createExpenseType) => Promise<NewE
     }
     return [];
   } catch (error) {
-    console.error('There was an error creating the Expense!');
+    //console.error('There was an error creating the Expense!');
     throw new Error(`There was an error creating the expense:\n${error}`);
   }
 };
@@ -118,7 +118,7 @@ export const deleteExpense: ({ id, userId }: deleteExpenseType) => Promise<Expen
       .returning();
     return deletedExpense;
   } catch (error) {
-    console.error('There was an error while deleting the expense from the database!');
+    //console.error('There was an error while deleting the expense from the database!');
     throw new Error(`There was an error while deleting the expense:\n${error}`);
   }
 };

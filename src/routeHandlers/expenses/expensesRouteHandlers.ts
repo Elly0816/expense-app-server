@@ -21,7 +21,7 @@ export const handleCreateExpense = async (c: Context) => {
     c.status(201);
     return c.json({ text: 'Expense has been added successfully' });
   } catch (error) {
-    console.error(`There was an error creating the expense: \n${error}`);
+    //console.error(`There was an error creating the expense: \n${error}`);
     // if (error instanceof HTTPException) {
     //   throw error;
     // }
@@ -40,7 +40,7 @@ export const handleGetExpense: (c: Context) => Promise<Response> = async (c: Con
     c.status(200);
     return c.json({ expenses: expenses });
   } catch (error) {
-    console.error('There was an error getting the expense: ', error);
+    //console.error('There was an error getting the expense: ', error);
     // if (error instanceof HTTPException) {
     //   throw error;
     // }
@@ -86,7 +86,7 @@ export const handleGetByDateRange: (c: Context) => Promise<Response> = async (c:
     c.status(200);
     return c.json({ expenses: expenses });
   } catch (error) {
-    console.error('There was an error getting the expense', error);
+    //console.error('There was an error getting the expense', error);
     c.status(500);
     return c.json(defaultErrorResponse);
   }

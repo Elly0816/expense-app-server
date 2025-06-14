@@ -48,7 +48,7 @@ export const checkAuth: MiddlewareHandler = async (c: Context, next: Next) => {
     c.set('token', JSON.parse(authToken));
     await next();
   } catch (err) {
-    console.error(`There was an error: \n${err}`);
+    //console.error(`There was an error: \n${err}`);
     c.status(401);
     return c.json({ isAuthenticated: false });
   }

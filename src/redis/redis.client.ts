@@ -7,7 +7,7 @@ async function connect() {
     await client.connect();
     //console.log('Connected to redis successfully');
   } catch (error) {
-    console.error('Redis connection error', error);
+    //console.error('Redis connection error', error);
     // throw error;
   }
 }
