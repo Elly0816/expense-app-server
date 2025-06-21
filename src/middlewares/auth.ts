@@ -19,22 +19,39 @@ export const googleOauth: (callbackURL: string) => MiddlewareHandler = (callback
 
 export const checkAuth: MiddlewareHandler = async (c: Context, next: Next) => {
   // const user = c.get('user-google');
-  const authToken = getCookie(c, 'auth_token');
+  let authToken = getCookie(c, 'auth_token');
   // const authToken = c.get('token');
   let user: GoogleUser | undefined | string = getCookie(c, 'user');
   if (user) {
     user = JSON.parse(user as string) as GoogleUser;
   }
 
-  const tokenExpiry = getCookie(c, 'token_expiry');
+  let tokenExpiry = getCookie(c, 'token_expiry');
   // //console.log('This is the user:\n');
   // //console.log(user);
+
   if (!authToken || !user || !tokenExpiry) {
-    //console.log('Could not find any of the cookies');
-    c.status(401);
-    //console.log('Unauthorized');
-    return c.json({ isAuthenticated: false });
+    // Then check the headers for the values
+    const authHeader = c.req.header('Authorization');
+    if (authHeader && authHeader.startsWith('Bearer')) {
+      const {
+        user: headerUser,
+        auth_token,
+        token_expiry,
+      } = JSON.parse(authHeader.substring(7) as string);
+      user = headerUser;
+      authToken = auth_token;
+      tokenExpiry = token_expiry;
+    }
+
+    if (!authToken || !user || !tokenExpiry) {
+      //console.log('Could not find any of the cookies');
+      c.status(401);
+      //console.log('Unauthorized');
+      return c.json({ isAuthenticated: false });
+    }
   }
+
   const currentTime = Math.floor(Date.now() / 1000);
 
   if (currentTime >= parseInt(tokenExpiry)) {

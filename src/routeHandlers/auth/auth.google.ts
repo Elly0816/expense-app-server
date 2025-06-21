@@ -60,6 +60,16 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
   setCookie(c, 'auth_token', JSON.stringify(accessToken), cookieOptions);
   setCookie(c, 'user', JSON.stringify(user) as string, cookieOptions);
 
+  //Set the headers
+
+  const authHeaderValue = JSON.stringify({
+    user,
+    auth_token: accessToken,
+    token_expiry: currentTime + tokenExpiry,
+  });
+
+  c.header('Authorization', authHeaderValue);
+
   // return c.json({ user: user });
   //console.log('Before redirecting');
   return c.redirect(`${process.env.CLIENT_URL}/`);
@@ -106,6 +116,7 @@ export const logout: (c: Context) => Promise<Response> = async (c) => {
     httpOnly: true,
     sameSite: 'None',
   });
+  c.header('Authorization', undefined);
 
   // if (userId) {
   //   const accessToken = ((await TokenManager.getTokens(userId)) as TokenData).accessToken;
