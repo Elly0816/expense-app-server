@@ -35,7 +35,7 @@ export const checkAuth: MiddlewareHandler = async (c: Context, next: Next) => {
     const authHeader = c.req.header('Authorization');
     console.log(`This is the auth header in the check Auth middleware`);
     if (authHeader && authHeader.startsWith('Bearer')) {
-      const newHeader = JSON.parse(authHeader.substring(7) as string);
+      const newHeader = JSON.parse(authHeader.substring(7).replace('%22', '') as string);
       console.log(newHeader);
       const { user: headerUser, auth_token, token_expiry } = newHeader;
       user = headerUser;
