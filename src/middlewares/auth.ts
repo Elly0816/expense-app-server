@@ -33,19 +33,18 @@ export const checkAuth: MiddlewareHandler = async (c: Context, next: Next) => {
   if (!authToken || !user || !tokenExpiry) {
     // Then check the headers for the values
     const authHeader = c.req.header('Authorization');
+    console.log(`This is the auth header in the check Auth middleware`);
     if (authHeader && authHeader.startsWith('Bearer')) {
-      const {
-        user: headerUser,
-        auth_token,
-        token_expiry,
-      } = JSON.parse(authHeader.substring(7) as string);
+      const newHeader = JSON.parse(authHeader.substring(7) as string);
+      console.log(newHeader);
+      const { user: headerUser, auth_token, token_expiry } = newHeader;
       user = headerUser;
       authToken = auth_token;
       tokenExpiry = token_expiry;
     }
 
     if (!authToken || !user || !tokenExpiry) {
-      //console.log('Could not find any of the cookies');
+      console.log('Could not find any of the cookies or required headers');
       c.status(401);
       //console.log('Unauthorized');
       return c.json({ isAuthenticated: false });

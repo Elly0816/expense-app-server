@@ -68,11 +68,14 @@ export const googleOAuthCallback: (c: Context) => Promise<Response> = async (c) 
     token_expiry: currentTime + tokenExpiry,
   });
 
-  c.header('Authorization', authHeaderValue);
+  // c.res.headers.set('Authorization', `Bearer ${authHeaderValue}`);
 
   // return c.json({ user: user });
   //console.log('Before redirecting');
-  return c.redirect(`${process.env.CLIENT_URL}/`);
+  // c.set('authHeaderValue', authHeaderValue);
+  console.log(`This is the Auth header that has been set: ${authHeaderValue}`);
+  return c.redirect(`${process.env.CLIENT_URL}/#token=${authHeaderValue}`);
+  // .headers.set('Authorization', `Bearer ${authHeaderValue}`);
   // try {
   //   await TokenManager.storeTokens(
   //     user?.id as string,
@@ -116,7 +119,8 @@ export const logout: (c: Context) => Promise<Response> = async (c) => {
     httpOnly: true,
     sameSite: 'None',
   });
-  c.header('Authorization', undefined);
+  // c.header('Authorization', undefined);
+  // c.res.headers.set('Authorization', '');
 
   // if (userId) {
   //   const accessToken = ((await TokenManager.getTokens(userId)) as TokenData).accessToken;
@@ -127,5 +131,5 @@ export const logout: (c: Context) => Promise<Response> = async (c) => {
   // }
   // c.header('Access-Control-Allow-Origin', process.env.CORS_ORIGIN);
   // return c.redirect(`${process.env.CLIENT_URL}/login`);
-  return c.json({ isAuthenticated: false });
+  return c.json({ isAuthenticated: false }, { headers: { Authorization: '' } });
 };

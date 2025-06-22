@@ -31,26 +31,26 @@ app.use(
   })
 );
 
-// app.use(async (c: Context, next: Next): Promise<void | undefined> => {
-//   const req = c.req;
+app.use(async (c: Context, next: Next): Promise<void | undefined> => {
+  const req = c.req;
 
-//   //console.log('=== REQUEST DEBUGGING ===');
+  console.log('=== REQUEST DEBUGGING ===');
 
-//   //console.log('URL: ', req.raw.url);
-//   //console.log('METHOD: ', req.raw.method);
-//   //console.log('HEADERS:\n');
+  console.log('URL: ', req.raw.url);
+  console.log('METHOD: ', req.raw.method);
+  console.log('HEADERS:\n');
 
-//   //console.log(req.raw.headers);
+  console.log(req.raw.headers);
 
-//   //console.log('Specific Proxy Headers:');
-//   //console.log('  x-forwarded-proto:', c.req.header('x-forwarded-proto'));
-//   //console.log('  x-forwarded-host:', c.req.header('x-forwarded-host'));
-//   //console.log('  x-forwarded-for:', c.req.header('x-forwarded-for'));
-//   //console.log('  host:', c.req.header('host'));
-//   //console.log('================================');
+  console.log('Specific Proxy Headers:');
+  console.log('  x-forwarded-proto:', c.req.header('x-forwarded-proto'));
+  console.log('  x-forwarded-host:', c.req.header('x-forwarded-host'));
+  console.log('  x-forwarded-for:', c.req.header('x-forwarded-for'));
+  console.log('  host:', c.req.header('host'));
+  console.log('================================');
 
-//   await next();
-// });
+  await next();
+});
 
 // app.use(logger());
 
