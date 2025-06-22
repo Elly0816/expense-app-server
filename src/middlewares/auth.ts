@@ -41,8 +41,16 @@ export const checkAuth: MiddlewareHandler = async (c: Context, next: Next) => {
       console.log(`This is the new header in the check Auth middleware`);
       console.log(newHeader);
       const { user: headerUser, auth_token, token_expiry } = newHeader;
+      console.log(`This is the user:`);
+      console.log(headerUser);
+
       user = headerUser;
+
+      console.log(`This is the auth token`);
+      console.log(auth_token);
       authToken = auth_token;
+      console.log(`This is the token expiry:`);
+      console.log(token_expiry);
       tokenExpiry = token_expiry;
     }
 
@@ -58,16 +66,16 @@ export const checkAuth: MiddlewareHandler = async (c: Context, next: Next) => {
 
   if (currentTime >= parseInt(tokenExpiry)) {
     c.status(401);
-    //console.log('Unauthorized');
+    console.log('Unauthorized');
     return c.json({ isAuthenticated: false });
   }
 
   try {
     c.set('user-google', user as GoogleUser);
-    c.set('token', JSON.parse(authToken));
+    c.set('token', typeof authToken === 'string' ? JSON.parse(authToken) : authToken);
     await next();
   } catch (err) {
-    //console.error(`There was an error: \n${err}`);
+    console.error(`There was an error: \n${err}`);
     c.status(401);
     return c.json({ isAuthenticated: false });
   }
