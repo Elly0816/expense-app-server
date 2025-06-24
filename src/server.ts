@@ -19,7 +19,7 @@ app.use(
   cors({
     origin: process.env.CORS_ORIGIN as string,
     credentials: true,
-    allowHeaders: ['Authorization'],
+    allowHeaders: ['Authorization', 'Content-Type'],
     // allowHeaders: [
     //   'Content-Type',
     //   'Authorization',
