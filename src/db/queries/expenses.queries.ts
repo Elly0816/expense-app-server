@@ -25,6 +25,10 @@ type userExpenseByDate = {
   category: CategoryType | undefined;
 };
 
+type editExpenseType = {
+  id: number;
+};
+
 export const getExpensesByCategory: ({
   category,
   userId,
@@ -121,4 +125,34 @@ export const deleteExpense: ({ id, userId }: deleteExpenseType) => Promise<Expen
     //console.error('There was an error while deleting the expense from the database!');
     throw new Error(`There was an error while deleting the expense:\n${error}`);
   }
+};
+
+export const getExpenseById: ({ id }: editExpenseType) => Promise<Expense[]> = async ({ id }) => {
+  try {
+    const result = await db.select().from(expenses).where(eq(expenses.id, id));
+    if (result.length > 0) {
+      return result;
+    }
+    return [];
+  } catch (error) {
+    throw new Error(`There was an error while getting the expense by it's id: ${id}`);
+  }
+};
+
+export const editExpense: ({
+  expense,
+  id,
+}: {
+  expense: Omit<createExpenseType['expense'], 'userId'>;
+  id: number;
+}) => Promise<Expense[]> = async ({ expense, id }) => {
+  const expenseId = id;
+
+  const result = await db
+    .update(expenses)
+    .set({ ...expense, date: new Date(expense.date as Date) })
+    .where(eq(expenses.id, expenseId))
+    .returning();
+
+  return result;
 };

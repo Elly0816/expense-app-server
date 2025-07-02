@@ -2,7 +2,9 @@ import { Hono } from 'hono';
 import {
   handleCreateExpense,
   handleDeleteExpense,
+  handleEditExpense,
   handleGetByDateRange,
+  handleGetById,
   handleGetExpense,
   handleGetPastDay,
   handleGetPastMonth,
@@ -22,3 +24,5 @@ expense.get('/day/:category/:currentDay', handleGetPastDay);
 expense.get('/week/:category/:currentDay', handleGetPastWeek);
 expense.get('/month/:category/:currentDay', handleGetPastMonth);
 expense.get('/year/:category/:currentDay', handleGetPastYear);
+expense.get('/id/:id', handleGetById);
+expense.patch('/:id', handleEditExpense);

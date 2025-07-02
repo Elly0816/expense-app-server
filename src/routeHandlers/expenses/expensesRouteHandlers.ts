@@ -3,12 +3,15 @@ import type { GoogleUser } from '@hono/oauth-providers/google';
 import {
   createExpense,
   deleteExpense,
+  editExpense,
   getExpenseByDate,
+  getExpenseById,
   getExpensesByCategory,
 } from '../../db/queries/expenses.queries';
 import type { CategoryType, ExpenseType } from '../../types';
 import { defaultErrorResponse } from '../../utils/defaultErrorResponse';
 import { convertToYMD } from '../../utils/convertToYMD';
+import type { Expense } from '../../db/schema/expenses';
 
 type ExpenseFromClient = Omit<ExpenseType, 'id'>;
 
@@ -255,6 +258,45 @@ export const handleGetPastYear: (c: Context) => Promise<Response> = async (c) =>
     return c.json({ expenses: { last: expenseOverThePastYear, prior: expenseOverPriorYear } });
   } catch (error) {
     //console.log('There was an error getting the expenses', error);
+    c.status(500);
+    return c.json(defaultErrorResponse);
+  }
+};
+
+export const handleGetById: (c: Context) => Promise<Response> = async (c) => {
+  const id: number = parseInt(c.req.param('id'));
+
+  try {
+    const expense = (await getExpenseById({ id }))[0];
+    c.status(200);
+    return c.json({ expense: expense });
+  } catch (error) {
+    console.error(error);
+    c.status(500);
+    return c.json(defaultErrorResponse);
+  }
+};
+
+export const handleEditExpense: (c: Context) => Promise<Response> = async (c) => {
+  const id: number = parseInt(c.req.param('id'));
+
+  console.log('This is the request body');
+  console.log(await c.req.json());
+  const body = (await c.req.json()) as ExpenseFromClient;
+  const expenseToUse = {
+    category: body.category,
+    amount: body.amount,
+    date: body.date,
+    expense: body.expense,
+  } as ExpenseFromClient;
+
+  // return c.json({ expense: 'wow' });
+  try {
+    const result = await editExpense({ expense: expenseToUse, id: id });
+    c.status(200);
+    return c.json({ expense: result });
+  } catch (error) {
+    console.error(error);
     c.status(500);
     return c.json(defaultErrorResponse);
   }
