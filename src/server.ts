@@ -8,6 +8,7 @@ import { logger } from 'hono/logger';
 import type { Context, MiddlewareHandler, Next } from 'hono';
 import { buildCallbackURL } from './utils/properURLConstruction';
 import { getCookie } from 'hono/cookie';
+import chat from './routes/chat/chat';
 
 console.log('Environment Variables:', {
   CORS_ORIGIN: process.env.CORS_ORIGIN,
@@ -19,7 +20,7 @@ app.use(
   cors({
     origin: process.env.CORS_ORIGIN as string,
     credentials: true,
-    allowHeaders: ['Authorization', 'Content-Type'],
+    allowHeaders: ['Authorization', 'Content-Type', 'Access-Control-Allow-Origin'],
     // allowHeaders: [
     //   'Content-Type',
     //   'Authorization',
@@ -28,26 +29,27 @@ app.use(
     // allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     // // Expose headers that your frontend might need to read
     // exposeHeaders: ['Set-Cookie'],
+    maxAge: 600,
   })
 );
 
 app.use(async (c: Context, next: Next): Promise<void | undefined> => {
   const req = c.req;
 
-  console.log('=== REQUEST DEBUGGING ===');
+  // console.log('=== REQUEST DEBUGGING ===');
 
-  console.log('URL: ', req.raw.url);
-  console.log('METHOD: ', req.raw.method);
-  console.log('HEADERS:\n');
+  // console.log('URL: ', req.raw.url);
+  // console.log('METHOD: ', req.raw.method);
+  // console.log('HEADERS:\n');
 
-  console.log(req.raw.headers);
+  // console.log(req.raw.headers);
 
-  console.log('Specific Proxy Headers:');
-  console.log('  x-forwarded-proto:', c.req.header('x-forwarded-proto'));
-  console.log('  x-forwarded-host:', c.req.header('x-forwarded-host'));
-  console.log('  x-forwarded-for:', c.req.header('x-forwarded-for'));
-  console.log('  host:', c.req.header('host'));
-  console.log('================================');
+  // console.log('Specific Proxy Headers:');
+  // console.log('  x-forwarded-proto:', c.req.header('x-forwarded-proto'));
+  // console.log('  x-forwarded-host:', c.req.header('x-forwarded-host'));
+  // console.log('  x-forwarded-for:', c.req.header('x-forwarded-for'));
+  // console.log('  host:', c.req.header('host'));
+  // console.log('================================');
 
   await next();
 });
@@ -86,6 +88,7 @@ app.use('auth/google', async (c: Context, next: Next) => {
 app.route('/', home);
 app.route('/expense', expense);
 app.route('/auth', auth);
+app.route('/chat', chat);
 
 export default {
   port,

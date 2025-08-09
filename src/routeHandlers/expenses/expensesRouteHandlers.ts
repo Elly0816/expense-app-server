@@ -15,7 +15,7 @@ import type { Expense } from '../../db/schema/expenses';
 
 type ExpenseFromClient = Omit<ExpenseType, 'id'>;
 
-export const handleCreateExpense = async (c: Context) => {
+export const handleCreateExpense: (c: Context) => Promise<Response> = async (c: Context) => {
   try {
     const body = (await c.req.json()) as ExpenseFromClient;
     const userId = (c.get('user-google') as GoogleUser).id;

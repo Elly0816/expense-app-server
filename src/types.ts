@@ -28,3 +28,9 @@ export type ExpenseType = {
   date: Date;
 };
 export {};
+
+export type conversationInputType = {
+  userPrompt: string;
+  userId: string;
+  name: string;
+};

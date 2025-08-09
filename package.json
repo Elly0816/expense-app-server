@@ -16,7 +16,8 @@
     "@neondatabase/serverless": "^1.0.1",
     "dotenv": "^16.6.1",
     "drizzle-orm": "^0.41.0",
-    "hono": "^4.8.3",
+    "groq-sdk": "^0.29.0",
+    "hono": "^4.9.0",
     "passport-google-oauth20": "^2.0.0"
   }
 }
