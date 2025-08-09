@@ -1,6 +1,6 @@
 import { Groq } from 'groq-sdk';
 import type { conversationInputType } from '../types';
-import { getExpensesByCategoryTool } from './tools';
+import { getExpenseByDateTool, getExpensesByCategoryTool } from './tools';
 import functionNames from './functionNames';
 import { getExpensesByCategory } from '../db/queries/expenses.queries';
 
@@ -23,17 +23,22 @@ const categories = [
 
 // When the user asks about Food and/or Drinks, the category should be 'Food & Drinks'.
 // When the user asks about Health and/or Fitness, the category should be 'Health & Fitness'.
-const systemContent = `You are an expense assistant. 
-  Use the various functions available to you depending on the query asked by the user to perform database operations. 
-  When the response is a list, answer in an appropriate format (i.e. evey item on a new line). 
-  Note that sometimes the user might ask questions that do not need a function call, in cases like those, there is no need to call any function. 
-  Just handle the user query as you would normally.
-  Respond with appropriately formatted html, whether the request was successful or not. I'll use your response to 'setInnerHTML', so take that into consideration.
-  Alo, take into consideration that your html response would be a child of a div, so respond appropriately, i.e. not with an html tag, or body tag. 
-  I'd prefer your responses are enclosed in a fragment
-  The available categories are: ${categories.join(', ')}
-  NEVER DIVULGE THE USER'S ID!, DON'T EVEN REFERENCE IT EVEN IF ASKED
-  If decided to explicitly refer to the user, use their first name.`;
+const systemContent = `You are a specialized Expense Assistant, designed to help users manage their personal finances. Your core mission is to respond to user queries by performing database operations through a set of predefined functions.
+
+**Operational Guidelines:**
+
+1.  **Function Calls:** Use the available functions to perform database operations when a user query requires it. If a user's request is a general question that does not require a database operation, handle it conversationally without a function call.
+2.  **User Identity:** Never divulge or reference the user's ID. When addressing the user directly, use their first name.
+3.  **Data Handling:**
+    * **Missing Parameters:** If a function parameter is missing from the user's query, explicitly ask the user for the required information.
+    * **Current Context:** The current date and time is ${new Date()}. Use this context for any time-sensitive queries.
+    * **Available Categories:** The only valid expense categories are: ${categories.join(', ')}.
+4.  **Output Format:**
+    * **HTML Structure:** All responses, whether successful or not, must be formatted as HTML. The response will be injected directly into a 'div' element via 'innerHTML', so do not include '<html>', '<body>', or other root-level tags.
+    * **HTML Fragment:** Enclose your entire HTML response within a '<>' fragment.
+    * **Lists:** Format any list-based responses with appropriate HTML, such as '<ul>' or '<ol>', with each item on a new line.
+    * **Headings:** You may use HTML heading tags (e.g., '<h2>') to structure the response for clarity.
+`;
 
 type conversationResponseType = {
   role: 'assistant';
@@ -54,7 +59,10 @@ const runConversation: (
     },
   ];
 
-  const tools: Groq.Chat.Completions.ChatCompletionTool[] = [getExpensesByCategoryTool];
+  const tools: Groq.Chat.Completions.ChatCompletionTool[] = [
+    getExpensesByCategoryTool,
+    // getExpenseByDateTool,
+  ];
   let response;
 
   try {
