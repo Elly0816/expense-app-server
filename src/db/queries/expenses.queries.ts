@@ -43,7 +43,7 @@ export const getExpensesByCategory: ({
     }
     return [];
   } catch (error) {
-    //console.error('There was an error getting the expense', error);
+    console.error('There was an error getting the expense', error);
     throw new Error('There was an error getting the expense');
   }
 };
@@ -57,13 +57,15 @@ export const getExpenseByDate: ({
   //console.log(`\n\nstartDate: ${startDate}\nendDate: ${endDate}`);
   //console.log(`Here is the userId: ${userId}`);
   //console.log(`Here is the category: ${category}`);
+  const newStartDate: Date = new Date(startDate);
+  const newEndDate: Date = new Date(endDate);
   try {
     let result: Expense[];
     if (!category) {
       result = await db
         .select()
         .from(expenses)
-        .where(and(eq(expenses.userId, userId), between(expenses.date, startDate, endDate)));
+        .where(and(eq(expenses.userId, userId), between(expenses.date, newStartDate, newEndDate)));
       //console.log(`Here are the results of the query: result: ${result}`);
       if (result.length > 0) {
         return result;
@@ -76,7 +78,7 @@ export const getExpenseByDate: ({
       .where(
         and(
           eq(expenses.userId, userId),
-          between(expenses.date, startDate, endDate),
+          between(expenses.date, newStartDate, newEndDate),
           eq(expenses.category, category)
         )
       );
@@ -86,7 +88,7 @@ export const getExpenseByDate: ({
     }
     return [];
   } catch (error) {
-    //console.log(`There was an error getting the expense: ${error}`);
+    console.log(`There was an error getting the expense: ${error}`);
     throw new Error('There was an expense getting the expense');
   }
 };
@@ -106,7 +108,7 @@ export const createExpense: (expenseFromUser: createExpenseType) => Promise<NewE
     }
     return [];
   } catch (error) {
-    //console.error('There was an error creating the Expense!');
+    console.error('There was an error creating the Expense!');
     throw new Error(`There was an error creating the expense:\n${error}`);
   }
 };
@@ -122,7 +124,7 @@ export const deleteExpense: ({ id, userId }: deleteExpenseType) => Promise<Expen
       .returning();
     return deletedExpense;
   } catch (error) {
-    //console.error('There was an error while deleting the expense from the database!');
+    console.error('There was an error while deleting the expense from the database!');
     throw new Error(`There was an error while deleting the expense:\n${error}`);
   }
 };

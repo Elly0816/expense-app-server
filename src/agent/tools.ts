@@ -8,15 +8,17 @@ const userIdProp = {
 };
 
 const startDateProp = {
-  type: 'Date',
-  description:
-    'When getting expenses by date, this is the start date to filter by. The expenses should not be earlier than this date.',
+  type: 'string',
+  format: 'date-time',
+  description: `When getting expenses by date, this is the start date in ISO 8601 format (e.g., 2025-08-11T14:30:00Z) to filter by. The expenses should not be earlier than this date. 
+    
+    `,
 };
 
 const endDateProp = {
-  type: 'Date',
-  description:
-    'When getting expenses by date, this is the end date to filter by. The expenses should not be later than this date.',
+  type: 'string',
+  format: 'date-time',
+  description: `When getting expenses by date, this is the end date in ISO 8601 format (e.g., 2025-08-11T14:30:00Z) to filter by. The expenses should not be later than this date.`,
 };
 
 const categoryProp = {
@@ -44,8 +46,9 @@ export const getExpenseByDateTool: Groq.Chat.Completions.ChatCompletionTool = {
   type: 'function',
   function: {
     name: functionNames.getExpenseByDate,
-    description:
-      "Get expenses by their date. Use this function when the user asks for expenses with regard to time, use the appropriate date values if they're not mentioned",
+    description: `Get expenses by their date. Use this function when the user asks for expenses with regard to time, use the appropriate date values if they're not mentioned
+      Use this tool ONLY when you are asked any date related queries.
+      `,
     parameters: {
       type: 'object',
       properties: {
@@ -54,7 +57,7 @@ export const getExpenseByDateTool: Groq.Chat.Completions.ChatCompletionTool = {
         endDate: endDateProp,
         category: categoryProp,
       },
-      required: ['userid', 'category', 'startDate', 'endDate'],
+      required: ['userId', 'category', 'startDate', 'endDate'],
     },
   },
 };

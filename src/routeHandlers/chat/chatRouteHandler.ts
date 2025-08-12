@@ -14,9 +14,14 @@ const handleChat: (c: Context) => Promise<Response> = async (c) => {
     const userId = (c.get('user-google') as GoogleUser).id;
     const userName = (c.get('user-google') as GoogleUser).name;
     console.log('Starting the conversation');
+
+    //Sanitize the query of any html tags
+    const cleanQuery = (body?.query as string).replace(/(<[^>]*>|\\n)/g, '');
+    console.log('This is the cleaned up query: ');
+    console.log(cleanQuery);
     const response = await runConversation({
       userId: userId,
-      userPrompt: body?.query,
+      userPrompt: cleanQuery,
       name: userName,
     });
     console.log(`Total processing time took: ${Date.now() - startTime}`);
