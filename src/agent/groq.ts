@@ -6,9 +6,9 @@ import { getExpenseByDate, getExpensesByCategory } from '../db/queries/expenses.
 
 const client = new Groq();
 
-// const MODEL = 'llama-3.3-70b-versatile';
+const MODEL = 'llama-3.3-70b-versatile';
 // const MODEL = 'deepseek-r1-distill-llama-70b';
-const MODEL = 'gemma2-9b-it';
+// const MODEL = 'gemma2-9b-it';
 
 const categories = [
   'Food & Drinks',
